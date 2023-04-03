@@ -42,7 +42,7 @@ const renderFirstMovie = (movie) => {
         </div>
         <h4 id = 'tickets'>Available Tickets: <span class = 'available-tickets'>${availableTickets}</span></h4>
         <div class = 'ticket-btn'>
-            <button id="book-ticket">Book Ticket</button>
+            <button id="first-movie-book-ticket">Book Ticket</button>
         </div>
     </div>`
 }
@@ -67,10 +67,33 @@ const renderMovies = function (movies) {
             </div>
         </div>`
 
-        // document.querySelector('#book-ticket').addEventListener('click', () => {
-        //     console.log('clicked');
-        // })
+        movieCard.querySelector('#book-ticket').addEventListener('click', (e) => {
+            e.preventDefault()
+            
+            if (movie.tickets_sold === movie.capacity || movie.tickets_sold >= movie.capacity) {
+                movieCard.querySelector('.ticket-btn').disabled = true
+                return
+            } else{
+                movie.tickets_sold += 1
+                updateAvailableTickets(movie)
+            }
+            
+            console.log(`clicked ${availableTickets}`);
+        })
 
         main.appendChild(movieCard)
     });
+}
+
+const updateAvailableTickets = function (movieObj) {
+    return fetch(`http://localhost:3000/films/${movieObj.id}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+        },
+        body: JSON.stringify(movieObj),
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
 }
